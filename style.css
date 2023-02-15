@@ -1,0 +1,53 @@
+body
+{
+    background-color: #fbd139;
+}
+
+#desafio
+{
+    color: red;
+}
+
+#tempo, #pontos
+{
+    color: green;
+}
+
+h1
+{
+    color: rgb(38, 0, 255);
+    background-color: cornsilk;
+}
+
+#show_sketch
+{
+    float:right;
+}
+
+canvas
+{
+    border: 5px white solid;
+    border-radius: 20px;
+    animation-name: exemple;
+    animation-duration: 4s;
+    margin-top: 180px;
+    animation-iteration-count: infinite;
+}
+
+@keyframes exemple
+{
+    from
+    {
+        box-shadow: 1px 1px 38px red;
+    }
+    to
+    {
+        box-shadow: 1px 1px 38px blue;
+    } 
+}
+
+p
+{
+    padding-top: 10px;
+    font-size: 25px;
+}
