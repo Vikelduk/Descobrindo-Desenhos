@@ -1,4 +1,6 @@
 pontua = 0;
+tempo = 0;
+modo = "espera";
 
 document.getElementById("pontos").innerHTML = 'Pontuação: ' + pontua;
 
@@ -7,69 +9,97 @@ random = Math.floor((Math.random() * array.lenght)+1)
 
 document.getElementById("desafio").innerHTML = 'Esboço a Ser Desenhado: ' + random;
 
-setTimeout(
-  function()
-  {
-    pontos();
-  }, 10000);
+document.getElementById("tempo").innerHTML = tempo;
 
-document.getElementById("tempo").innerHTML = setTimeout(function(){pontos();},10000);
-
-  function preload()
-  {
-      classifier = ml5.imageClassifier('DoodleNet');
-  }
+function preload()
+{
+    classifier = ml5.imageClassifier('DoodleNet');
+}
   
-  function setup()
-  {
-      canvas = createCanvas(280, 280);
-      canvas.center();
-      background("white");
-      canvas.mouseReleased(classifyCanvas);
-  }
-  
-  function draw()
-  {
-      strokeWeight(13);
-      stroke(0);
-  
-      if (mouseIsPressed)
-      {
-          line(pmouseX, pmouseY, mouseX, mouseY); 
-      }
-  }
-  
-  function clearCanvas()
-  {
-      background("white");
-  }
-  
-  function classifyCanvas()
-  {
-      classifier.classify(canvas, gotResults);
-  }
-  
-  function gotResults(error, results)
-  {
-      if (error)
-      {
-          console.error(error);
-      }
-      console.log(results);
-      var result = results[0].label;
-      document.getElementById("label").innerHTML = 'Nome: ' + result.replace('_', ' ');
-      
-      confidencia = Math.round(results[0].confidence * 100)
-
-      document.getElementById("confidence").innerHTML = 'Precisão: ' + confidencia + '%';
-      pontos();
-      
-  }
-
-  function pontos()
-  {
-    if (confidencia > 60 )
+function setup()
+{
+    canvas = createCanvas(280, 280);
+    canvas.center();
+    background("white");
+    canvas.mouseReleased(classifyCanvas);
+}
+function jogar()
+{
+    if (modo == "espera")
     {
-      pontua = pontua + 1; 
+        modo = "jogo";
     }
-  }
+}
+  
+function draw()
+{
+    strokeWeight(13);
+    stroke(0);
+  
+    if (mouseIsPressed)
+    {
+        line(pmouseX, pmouseY, mouseX, mouseY); 
+    }
+
+    if (modo == "jogo")
+    {
+        if (tempo > 800)
+        {
+            tempo = 0;
+            modo = "espera";
+
+            document.getElementById("tempo").innerHTML = "Tempo Esgotou, não consegui descobrir o seu desenho...";
+        
+            background('white')
+        }
+        else
+        {
+            tempo = tempo + 1;
+
+            if (confidencia > 60 )
+            {
+                pontua = pontua + 1;
+                modo = "espera";
+                confidencia = 0; 
+
+                document.getElementById("desafio").innerHTML = "Parabéns, eu consegui descobrir o seu desenho!"
+            }
+
+            document.getElementById("tempo").innerHTML = "Tempo: " + tempo;
+        }
+    }
+}
+  
+function clearCanvas()
+{
+    background("white");
+}
+  
+function classifyCanvas()
+{
+    classifier.classify(canvas, gotResults);
+}
+  
+function gotResults(error, results)
+{
+    if (error)
+    {
+        console.error(error);
+    }
+    console.log(results);
+
+    result = results[0].label;
+    confidencia = Math.round(results[0].confidence * 100);
+
+    if (modo == "jogo")
+    {
+        document.getElementById("label").innerHTML = 'Nome: ' + result.replace('_', ' ');
+        document.getElementById("confidence").innerHTML = 'Precisão: ' + confidencia + '%';
+    }
+    else
+    {
+        document.getElementById("label").innerHTML = "Comece o jogo";
+        document.getElementById("confidence").innerHTML = "Comece o jogo";
+    }
+      
+}
